@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STPD | پیام‌رسان مدرسه</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Tahoma,sans-serif;
+ background:#070b16;
+ color:#fff;
+}
+header{
+ background:#101a30;
+ padding:18px;
+ text-align:center;
+ border-bottom:2px solid #00d9ff;
+}
+.logo{
+ font-size:34px;
+ font-weight:bold;
+ color:#00d9ff;
+ text-shadow:0 0 15px #008cff;
+}
+header p{color:#a8bad7;font-size:13px}
+.container{
+ max-width:600px;
+ margin:25px auto;
+ padding:15px;
+}
+.card{
+ background:#111b30;
+ border:1px solid #243a5c;
+ border-radius:18px;
+ padding:22px;
+ margin-bottom:18px;
+ box-shadow:0 0 20px #00142b;
+}
+h2{color:#00d9ff;margin-top:0}
+input,button,select{
+ width:100%;
+ padding:13px;
+ margin:8px 0;
+ border-radius:10px;
+ border:1px solid #29466e;
+ background:#080f20;
+ color:white;
+ font-size:15px;
+}
+button{
+ background:linear-gradient(90deg,#0077ff,#00d9ff);
+ color:#04101e;
+ font-weight:bold;
+ border:none;
+ cursor:pointer;
+}
+button:hover{filter:brightness(1.15)}
+.secondary{
+ background:#243653;
+ color:white;
+}
+.hidden{display:none!important}
+.profile{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin-bottom:15px;
+}
+.avatar{
+ width:55px;height:55px;
+ border-radius:50%;
+ background:#00d9ff;
+ color:#061020;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:25px;
+ font-weight:bold;
+}
+.tabs{
+ display:flex;
+ gap:8px;
+ margin-bottom:15px;
+}
+.tabs button{font-size:12px;padding:12px 4px}
+.room{
+ background:#0a1427;
+ padding:14px;
+ border-radius:12px;
+ margin:9px 0;
+ border:1px solid #263d60;
+ cursor:pointer;
+}
+.room:hover{border-color:#00d9ff}
+#messages{
+ height:270px;
+ overflow-y:auto;
+ background:#080f20;
+ padding:12px;
+ border-radius:12px;
+ margin-bottom:10px;
+}
+.message{
+ background:#153354;
+ border-radius:12px;
+ padding:10px;
+ margin:8px 0;
+ overflow-wrap:anywhere;
+}
+.message small{color:#7cecff;display:block;margin-bottom:5px}
+.notice{
+ font-size:12px;
+ line-height:1.9;
+ color:#a8bad7;
+}
+footer{text-align:center;color:#617693;padding:20px;font-size:12px}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">⚡ STPD ⚡</div>
+ <p>پیام‌رسان دانش‌آموزی</p>
+</header>
+
+<div class="container">
+
+<section class="card" id="login">
+ <h2>🚀 ورود به STPD</h2>
+ <p>برای شروع، پروفایلت رو بساز!</p>
+
+ <input id="username" placeholder="اسم یا نام کاربری">
+ <input id="password" type="password" placeholder="یک رمز عبور انتخاب کن">
+ <input id="className" placeholder="نام کلاس، مثلاً هفتم الف">
+
+ <button onclick="register()">ورود به پیام‌رسان</button>
+
+ <p class="notice">
+این نسخه آزمایشی است. حساب‌ها هنوز روی سرور ذخیره نمی‌شوند.
+رمز واقعی یا رمز حساب‌های دیگرت را وارد نکن.
+ </p>
+</section>
+
+<section id="app" class="hidden">
+
+ <div class="card">
+  <div class="profile">
+   <div class="avatar" id="avatar">؟</div>
+   <div>
+    <h2 id="welcome">سلام!</h2>
+    <div id="myClass"></div>
+   </div>
+  </div>
+
+  <label>🖼️ انتخاب عکس پروفایل</label>
+  <input id="photo" type="file" accept="image/*" onchange="changePhoto(event)">
+
+  <button class="secondary" onclick="logout()">خروج از حساب</button>
+ </div>
+
+ <div class="tabs">
+  <button onclick="showPage('rooms')">💬 گروه‌ها</button>
+  <button onclick="showPage('chat')">✉️ گفت‌وگو</button>
+  <button onclick="showPage('about')">ℹ️ راهنما</button>
+ </div>
+
+ <section class="card" id="rooms">
+  <h2>🏫 گروه‌های کلاسی</h2>
+
+  <div class="room" onclick="openRoom('گفت‌وگوی عمومی')">
+   💬 گفت‌وگوی عمومی
+  </div>
+
+  <div class="room" onclick="openRoom('گروه کلاس')">
+   📚 گروه کلاس من
+  </div>
+
+  <div class="room" onclick="openRoom('تکالیف و درس‌ها')">
+   📝 تکالیف و درس‌ها
+  </div>
+
+  <p class="notice">
+  گروه‌ها در این نسخه نمایشی هستند؛ پیام‌ها هنوز برای دیگر کاربران ارسال نمی‌شوند.
+  </p>
+ </section>
+
+ <section class="card hidden" id="chat">
+  <h2 id="roomTitle">💬 گفت‌وگو</h2>
+
+  <div id="messages"></div>
+
+  <input id="messageInput" placeholder="پیامت رو بنویس..."
+   onkeydown="if(event.key==='Enter')sendMessage()">
+
+  <button onclick="sendMessage()">ارسال پیام ➤</button>
+  <button class="secondary" onclick="showPage('rooms')">بازگشت به گروه‌ها</button>
+ </section>
+
+ <section class="card hidden" id="about">
+  <h2>ℹ️ دربارهٔ STPD</h2>
+  <p>یک پروژهٔ آزمایشی برای ارتباط دانش‌آموزان.</p>
+  <p>🎨 طراحی آبی و مشکی</p>
+  <p>👤 پروفایل کاربری</p>
+  <p>🏫 گروه‌های کلاسی</p>
+  <p>💬 محیط گفت‌وگو</p>
+  <p class="notice">
+  برای تبدیل این نمونه به پیام‌رسان واقعی، باید احراز هویت امن،
+  پایگاه داده و ارسال زندهٔ پیام‌ها راه‌اندازی شود.
+  </p>
+ </section>
+
+</section>
+</div>
+
+<footer>STPD © 2026 | نسخهٔ آزمایشی</footer>
+
+<script>
+let currentUser = "";
+let currentClass = "";
+let currentRoom = "گفت‌وگوی عمومی";
+
+function register(){
+ const name = document.getElementById("username").value.trim();
+ const pass = document.getElementById("password").value;
+ const cls = document.getElementById("className").value.trim();
+
+ if(!name || !pass || !cls){
+  alert("لطفاً نام، رمز آزمایشی و کلاس را وارد کن.");
+  return;
+ }
+
+ if(name.length > 30 || pass.length < 4 || cls.length > 40){
+  alert("نام یا کلاس طولانی است؛ رمز آزمایشی هم باید حداقل ۴ حرف داشته باشد.");
+  return;
+ }
+
+ currentUser = name;
+ currentClass = cls;
+
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+ document.getElementById("welcome").textContent = "سلام، " + name + "!";
+ document.getElementById("myClass").textContent = "🏫 " + cls;
+ document.getElementById("avatar").textContent = name.charAt(0);
+
+ showPage("rooms");
+}
+
+function logout(){
+ currentUser = "";
+ currentClass = "";
+ document.getElementById("app").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
+ document.getElementById("password").value = "";
+}
+
+function showPage(page){
+ ["rooms","chat","about"].forEach(id=>{
+  document.getElementById(id).classList.toggle("hidden",id !== page);
+ });
+}
+
+function openRoom(room){
+ currentRoom = room;
+ document.getElementById("roomTitle").textContent = "💬 " + room;
+ document.getElementById("messages").innerHTML =
+  '<p class="notice">به ' + room + ' خوش آمدی! این گفت‌وگو فعلاً آزمایشی است.</p>';
+ showPage("chat");
+}
+
+function sendMessage(){
+ const input = document.getElementById("messageInput");
+ const text = input.value.trim();
+
+ if(!text) return;
+
+ const box = document.getElementById("messages");
+ const msg = document.createElement("div");
+ msg.className = "message";
+
+ const author = document.createElement("small");
+ author.textContent = currentUser + " • " + currentRoom;
+
+ const body = document.createElement("div");
+ body.textContent = text;
+
+ msg.appendChild(author);
+ msg.appendChild(body);
+ box.appendChild(msg);
+
+ input.value = "";
+ box.scrollTop = box.scrollHeight;
+}
+
+function changePhoto(event){
+ const file = event.target.files[0];
+ if(!file) return;
+
+ if(!file.type.startsWith("image/")){
+  alert("لطفاً یک فایل تصویری انتخاب کن.");
+  return;
+ }
+
+ if(file.size > 2*1024*1024){
+  alert("حجم عکس باید کمتر از ۲ مگابایت باشد.");
+  return;
+ }
+
+ const reader = new FileReader();
+ reader.onload = function(){
+  const avatar = document.getElementById("avatar");
+  avatar.style.backgroundImage = "url('" + reader.result + "')";
+  avatar.style.backgroundSize = "cover";
+  avatar.style.backgroundPosition = "center";
+  avatar.textContent = "";
+ };
+ reader.readAsDataURL(file);
+}
+</script>
+
+</body>
+</html>
